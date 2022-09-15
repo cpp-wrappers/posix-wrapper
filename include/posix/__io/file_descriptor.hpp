@@ -3,26 +3,26 @@
 #include "../error.hpp"
 #include "../error_handler.hpp"
 #include "./file_access_mode.hpp"
+#include "./move_offset.hpp"
 
 #include <c_string.hpp>
 #include <range.hpp>
 #include <optional.hpp>
 #include <expected.hpp>
 
-extern "C" int close(int fd);
 extern "C" nint write(int fd, const void* buf, nuint nbytes);
 extern "C" nint read(int fd, void *buf, nuint nbytes);
 
 namespace posix {
 
-struct file {
-	int fd;
+struct file_descriptor {
+	int number_;
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_read_to(Range&& range, ErrorHandler error_handler) const {
 		nint result = ::read(
-			fd,
-			range_iterator(range),
+			number_,
+			&*range_iterator(range),
 			range_size(range) * sizeof(range_element_type<Range>)
 		);
 		if(result == -1) {
@@ -44,8 +44,8 @@ struct file {
 		Range&& range, nuint size, ErrorHandler&& error_handler
 	) const {
 		nint result = ::write(
-			fd,
-			range_iterator(range),
+			number_,
+			&*range_iterator(range),
 			size * sizeof(range_element_type<Range>)
 		);
 		if(result == -1) {
@@ -68,21 +68,22 @@ struct file {
 		return write_from(forward<Range>(range), size);
 	}
 
-};
-
-class own_file {
-	file file_;
-public:
-
-	own_file(file file) : file_{ file } {}
-
-	const file* operator ->() const { return &file_; }
-	      file* operator ->()       { return &file_; }
-
-	~own_file() {
-		// file descriptor is always valid, don't check for EOF
-		::close(file_.fd);
+	offset set_offset(posix::offset o) const {
+		return ::lseek(number_, o, (int) posix::__seek::set);
 	}
+
+	offset set_offset_relative_to_current(posix::offset o) const {
+		return ::lseek(number_, o, (int) posix::__seek::cur);
+	}
+
+	offset set_offset_relative_to_end(posix::offset o) const {
+		return ::lseek(number_, o, (int) posix::__seek::end);
+	}
+
+	offset set_offset_to_end() const {
+		return ::lseek(number_, 0, (int) posix::__seek::end);
+	}
+
 };
 
 }

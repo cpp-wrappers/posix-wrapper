@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 		abort();
 	}
 
-	own_file f = open_file(
+	own_file f = open(
 		c_string{ argv[1] },
 		file_access_modes{ file_access_mode::read }
 	);
