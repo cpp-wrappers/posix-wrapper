@@ -56,7 +56,7 @@ namespace posix {
 			try_allocate_non_owning_memory_of<ForType>(
 				size, error_handler
 			).iterator();
-		return { ptr, size };
+		return { (storage<ForType>*) ptr, size };
 	}
 
 	template<typename ForType, typename ErrorHandler>

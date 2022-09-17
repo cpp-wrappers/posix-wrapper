@@ -1,10 +1,9 @@
 #pragma once
 
-#include <integer.hpp>
+#include "./free.hpp"
+
 #include <span.hpp>
 #include <storage.hpp>
-
-extern "C" void free(void* ptr);
 
 namespace posix {
 
@@ -12,16 +11,16 @@ template<typename ForType>
 struct memory_for : storage<ForType> {
 
 	~memory_for() {
-		::free((void*) this->data);
+		free_non_owning_memory((void*) this->data);
 	}
 
 };
 
 template<typename ForType = uint8>
-class memory_for_range_of : public span<ForType> {
-	using base_type = span<ForType>;
+class memory_for_range_of : public span<storage<ForType>> {
+	using base_type = span<storage<ForType>>;
 
-	memory_for_range_of(ForType* ptr, nuint size) :
+	memory_for_range_of(storage<ForType>* ptr, nuint size) :
 		base_type{ ptr, size }
 	{}
 
@@ -31,8 +30,19 @@ class memory_for_range_of : public span<ForType> {
 
 public:
 
+	memory_for_range_of() = default;
+
+	memory_for_range_of(memory_for_range_of&& other)
+		: base_type{ exchange((base_type&)other, base_type{}) }
+	{}
+
+	memory_for_range_of& operator = (memory_for_range_of&& other) {
+		((base_type&) *this) = exchange((base_type&)other, base_type{});
+		return *this;
+	}
+
 	~memory_for_range_of() {
-		::free((void*) base_type::iterator());
+		free_non_owning_memory((void*) base_type::iterator());
 	}
 
 };

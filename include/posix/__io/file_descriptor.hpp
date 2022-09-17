@@ -54,6 +54,15 @@ struct file_descriptor {
 		return result;
 	}
 
+	template<contiguous_range Range, typename ErrorHandler>
+	nuint try_write_from(
+		Range&& range, ErrorHandler&& error_handler
+	) const {
+		return try_write_from(
+			forward<Range>(range), forward<ErrorHandler>(error_handler)
+		);
+	}
+
 	template<contiguous_range Range>
 	nuint write_from(Range&& range, nuint size) const {
 		return try_write_from(
