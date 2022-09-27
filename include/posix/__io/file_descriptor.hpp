@@ -58,8 +58,11 @@ struct file_descriptor {
 	nuint try_write_from(
 		Range&& range, ErrorHandler&& error_handler
 	) const {
+		auto size = range_size(range);
 		return try_write_from(
-			forward<Range>(range), forward<ErrorHandler>(error_handler)
+			forward<Range>(range),
+			size,
+			forward<ErrorHandler>(error_handler)
 		);
 	}
 

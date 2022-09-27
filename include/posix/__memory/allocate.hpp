@@ -36,7 +36,7 @@ namespace posix {
 	template<typename ForType>
 	inline span<ForType>
 	allocate_non_owning_memory_of(nuint size) {
-		return allocate_non_owning_memory_of<ForType>(
+		return try_allocate_non_owning_memory_of<ForType>(
 			size, posix::error_handler
 		);
 	}
@@ -44,7 +44,7 @@ namespace posix {
 	template<typename ForType>
 	inline span<ForType>
 	allocate_non_owning_zeroed_memory_of(nuint size) {
-		return allocate_non_owning_zeroed_memory_of<ForType>(
+		return try_allocate_non_owning_zeroed_memory_of<ForType>(
 			size, posix::error_handler
 		);
 	}

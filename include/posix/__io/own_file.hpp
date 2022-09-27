@@ -6,17 +6,21 @@
 namespace posix {
 
 class own_file {
-	file_descriptor fd;
+	file_descriptor fd{ -1 };
 public:
 
 	own_file(file_descriptor file) : fd{ file } {}
+
+	own_file(const own_file&) = delete;
+	own_file(own_file&&) = delete;
 
 	const file_descriptor* operator ->() const { return &fd; }
 	      file_descriptor* operator ->()       { return &fd; }
 
 	~own_file() {
-		// file descriptor is always valid, don't check for EOF
-		posix::close_file(fd);
+		if(fd.number_ != -1) {
+			posix::close_file(fd);
+		}
 	}
 };
 

@@ -17,6 +17,7 @@ exit 0
 #endif
 
 #include <posix/io.hpp>
+#include <posix/abort.hpp>
 #include <array.hpp>
 
 #include <posix/default_error_handler.cpp>
@@ -26,10 +27,10 @@ int main(int argc, char** argv) {
 
 	if(argc != 2) {
 		std_err().write_from(c_string{ "usage: cat <path>" });
-		abort();
+		posix::abort();
 	}
 
-	own_file f = open(
+	own_file f = open_file(
 		c_string{ argv[1] },
 		file_access_modes{ file_access_mode::read }
 	);
