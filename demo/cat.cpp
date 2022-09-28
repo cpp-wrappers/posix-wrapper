@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	using namespace posix;
 
 	if(argc != 2) {
-		std_err().write_from(c_string{ "usage: cat <path>" });
+		std_err.write_from(c_string{ "usage: cat <path>" });
 		posix::abort();
 	}
 
@@ -37,6 +37,6 @@ int main(int argc, char** argv) {
 
 	array<char, 65536> data;
 	while(nuint read = f->read_to(data)) {
-		std_out().write_from(data, read);
+		std_out.write_from(data, read);
 	}
 }

@@ -8,9 +8,9 @@ extern "C" void* __acrt_iob_func(unsigned index);
 
 namespace posix {
 
-	inline file_descriptor std_in()  { return { 0 }; }
-	inline file_descriptor std_out() { return { 1 }; }
-	inline file_descriptor std_err() { return { 2 }; }
+	static constexpr file_descriptor std_in  { 0 };
+	static constexpr file_descriptor std_out { 1 };
+	static constexpr file_descriptor std_err { 2 };
 
 }
 

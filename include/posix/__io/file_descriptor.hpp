@@ -16,7 +16,11 @@ extern "C" nint read(int fd, void *buf, nuint nbytes);
 namespace posix {
 
 struct file_descriptor {
-	int number_;
+	int32 number_;
+
+	explicit operator int32 () const {
+		return number_;
+	}
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_read_to(Range&& range, ErrorHandler error_handler) const {

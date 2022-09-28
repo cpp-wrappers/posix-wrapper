@@ -11,7 +11,7 @@ template<typename ForType>
 struct memory_for : storage<ForType> {
 
 	~memory_for() {
-		free_non_owning_memory((void*) this->data);
+		free_raw_memory((void*) this->data);
 	}
 
 };
@@ -42,7 +42,7 @@ public:
 	}
 
 	~memory_for_range_of() {
-		free_non_owning_memory((void*) base_type::iterator());
+		free_raw_memory((void*) base_type::iterator());
 	}
 
 };

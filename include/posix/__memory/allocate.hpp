@@ -10,7 +10,7 @@ namespace posix {
 
 	template<typename ForType, typename ErrorHandler>
 	inline span<ForType>
-	try_allocate_non_owning_memory_of(
+	try_allocate_raw_memory_of(
 		nuint size, ErrorHandler&& error_handler
 	) {
 		nuint size_bytes = sizeof(ForType) * size;
@@ -23,7 +23,7 @@ namespace posix {
 
 	template<typename ForType, typename ErrorHandler>
 	inline span<ForType>
-	try_allocate_non_owning_zeroed_memory_of(
+	try_allocate_raw_zeroed_memory_of(
 		nuint size, ErrorHandler&& error_handler
 	) {
 		ForType* ptr = (ForType*) calloc(size, sizeof(ForType));
@@ -35,16 +35,16 @@ namespace posix {
 
 	template<typename ForType>
 	inline span<ForType>
-	allocate_non_owning_memory_of(nuint size) {
-		return try_allocate_non_owning_memory_of<ForType>(
+	allocate_raw_memory_of(nuint size) {
+		return try_allocate_raw_memory_of<ForType>(
 			size, posix::error_handler
 		);
 	}
 
 	template<typename ForType>
 	inline span<ForType>
-	allocate_non_owning_zeroed_memory_of(nuint size) {
-		return try_allocate_non_owning_zeroed_memory_of<ForType>(
+	allocate_raw_zeroed_memory_of(nuint size) {
+		return try_allocate_raw_zeroed_memory_of<ForType>(
 			size, posix::error_handler
 		);
 	}
@@ -53,7 +53,7 @@ namespace posix {
 	inline memory_for_range_of<ForType>
 	try_allocate_memory_for(nuint size, ErrorHandler&& error_handler) {
 		auto ptr =
-			try_allocate_non_owning_memory_of<ForType>(
+			try_allocate_raw_memory_of<ForType>(
 				size, error_handler
 			).iterator();
 		return { (storage<ForType>*) ptr, size };
@@ -63,7 +63,7 @@ namespace posix {
 	inline memory_for<ForType>
 	try_allocate_memory_for(ErrorHandler&& error_handler) {
 		ForType* ptr =
-			allocate_non_owning_memory_of<ForType>(
+			allocate_raw_memory_of<ForType>(
 				1, error_handler
 			).iterator();
 		return *(memory_for<ForType>*) ptr; // not trivial, actually...
