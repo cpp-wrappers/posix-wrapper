@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __MINGW32__
+#if __MINGW32__ || __gnu_linux__
 
 #include "./file_descriptor.hpp"
 

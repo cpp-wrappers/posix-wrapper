@@ -2,21 +2,24 @@
 
 #include <integer.hpp>
 
-extern "C" int clock_gettime(int32 clock_id, void* tp);
+extern "C" int clock_gettime(int clock_id, void* tp);
 
 namespace posix {
 
-#ifdef __MINGW32__
 	struct seconds_and_nanoseconds {
+	#if __MINGW32__
 		uint64 seconds;
 		uint32 nanoseconds;
+	#elif __gnu_linux__
+		long seconds;
+		long nanoseconds;
+	#else
+	static_assert(false);
+	#endif
 	};
-#else
-static_assert(false);
-#endif
 
 	struct clock {
-		int32 id_;
+		int id_;
 
 		seconds_and_nanoseconds secods_and_nanoseconds() const {
 			seconds_and_nanoseconds t;
@@ -26,7 +29,7 @@ static_assert(false);
 
 	};
 
-#ifdef __MINGW32__
+#if __MINGW32__ || __gnu_linux__
 	static constexpr clock monolitic_clock{ 1 };
 #else
 static_assert(false);

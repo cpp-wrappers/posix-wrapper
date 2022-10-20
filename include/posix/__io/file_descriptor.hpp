@@ -23,7 +23,9 @@ struct file_descriptor {
 	}
 
 	template<contiguous_range Range, typename ErrorHandler>
-	nuint try_read_to(Range&& range, ErrorHandler error_handler) const {
+	nuint try_read_to(
+		Range&& range, ErrorHandler error_handler
+	) const {
 		nint result = ::read(
 			number_,
 			&*range_iterator(range),
@@ -31,6 +33,7 @@ struct file_descriptor {
 		);
 		if(result == -1) {
 			error_handler(posix::latest_error());
+			return 0;
 		}
 		return result;
 	}
@@ -54,6 +57,7 @@ struct file_descriptor {
 		);
 		if(result == -1) {
 			error_handler(posix::latest_error());
+			return 0;
 		}
 		return result;
 	}

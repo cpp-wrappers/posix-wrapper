@@ -19,6 +19,7 @@ inline own_file try_open_file(
 	int fd = ::open(name.iterator(), (int) modes);
 	if(fd == -1) {
 		error_handler(posix::latest_error());
+		return {};
 	}
 	return own_file{ file_descriptor{ fd } };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __MINGW32__
+#if __MINGW32__ || __gnu_linux__
 	extern "C" int __isnan (double);
 	extern "C" int __isnanf(float);
 	extern "C" int __isnanl(long double);

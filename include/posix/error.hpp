@@ -29,6 +29,15 @@ struct error {
 			return { *_errno() };
 		}
 	}
+#elif __gnu_linux__
+	extern "C" int* __errno_location();
+
+	namespace posix {
+		inline error latest_error() {
+			return { *__errno_location() };
+		}
+	}
+
 #else
 static_assert(false);
 #endif

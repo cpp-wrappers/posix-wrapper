@@ -4,16 +4,20 @@
 
 namespace posix {
 	using offset =
-			#ifdef __MINGW32__
-			int32;
-			#else
-			static_assert(false);
-			#endif
+		#if __MINGW32__
+		int32
+		#elif __gnu_linux__
+		long
+		#else
+		static_assert(false);
+		#endif
+	;
+
 	enum class __seek {
-		#ifdef __MINGW32__
+		#if __MINGW32__ || __gnu_linux__
+		set = 0,
 		cur = 1,
-		end = 2,
-		set = 0
+		end = 2
 		#else
 		static_assert(false);
 		#endif

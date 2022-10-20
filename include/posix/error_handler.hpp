@@ -5,7 +5,6 @@
 
 namespace posix {
 
-	[[ noreturn ]]
 	void error_handler(posix::error);
 
 }

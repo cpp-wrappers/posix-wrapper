@@ -15,6 +15,18 @@ enum class file_access_mode {
 	exclusive  = 0x0400,
 	text       = 0x4000,
 	binary     = 0x8000
+	#elif __gnu_linux__
+
+	binary     = 00000,
+	read       = 00000,
+	write      = 00001,
+	read_write = 00002,
+	create     = 00100,
+	exclusive  = 00200,
+	trunc      = 01000,
+	append     = 02000,
+	text       = 04000
+
 	#else
 	static_assert(false);
 	#endif

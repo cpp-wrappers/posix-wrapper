@@ -9,6 +9,7 @@ class own_file {
 	file_descriptor fd{ -1 };
 public:
 
+	own_file() = default;
 	own_file(file_descriptor file) : fd{ file } {}
 
 	own_file(const own_file&) = delete;
