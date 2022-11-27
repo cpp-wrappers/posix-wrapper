@@ -7,6 +7,8 @@ namespace posix {
 
 	void error_handler(posix::error);
 
+	[[noreturn]] void no_return_error_handler(posix::error);
+
 }
 
 #else

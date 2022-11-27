@@ -9,25 +9,30 @@
 #include <range.hpp>
 #include <optional.hpp>
 #include <expected.hpp>
+#include <handle.hpp>
 
 extern "C" nint write(int fd, const void* buf, nuint nbytes);
 extern "C" nint read(int fd, void *buf, nuint nbytes);
 
 namespace posix {
+	struct file;
+}
 
-struct file_descriptor {
-	int32 number_;
+template<>
+struct handle_underlying_t<posix::file> {
+	using type = int32;
+	static constexpr type invalid = -1;
+};
 
-	explicit operator int32 () const {
-		return number_;
-	}
+template<>
+struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_read_to(
 		Range&& range, ErrorHandler error_handler
 	) const {
 		nint result = ::read(
-			number_,
+			underlying(),
 			&*range_iterator(range),
 			range_size(range) * sizeof(range_element_type<Range>)
 		);
@@ -51,7 +56,7 @@ struct file_descriptor {
 		Range&& range, nuint size, ErrorHandler&& error_handler
 	) const {
 		nint result = ::write(
-			number_,
+			underlying(),
 			&*range_iterator(range),
 			size * sizeof(range_element_type<Range>)
 		);
@@ -88,22 +93,20 @@ struct file_descriptor {
 		return write_from(forward<Range>(range), size);
 	}
 
-	offset set_offset(posix::offset o) const {
-		return ::lseek(number_, o, (int) posix::__seek::set);
+	posix::offset set_offset(posix::offset o) const {
+		return ::lseek(underlying(), o, (int) posix::__seek::set);
 	}
 
-	offset set_offset_relative_to_current(posix::offset o) const {
-		return ::lseek(number_, o, (int) posix::__seek::cur);
+	posix::offset set_offset_relative_to_current(posix::offset o) const {
+		return ::lseek(underlying(), o, (int) posix::__seek::cur);
 	}
 
-	offset set_offset_relative_to_end(posix::offset o) const {
-		return ::lseek(number_, o, (int) posix::__seek::end);
+	posix::offset set_offset_relative_to_end(posix::offset o) const {
+		return ::lseek(underlying(), o, (int) posix::__seek::end);
 	}
 
-	offset set_offset_to_end() const {
-		return ::lseek(number_, 0, (int) posix::__seek::end);
+	posix::offset set_offset_to_end() const {
+		return ::lseek(underlying(), 0, (int) posix::__seek::end);
 	}
 
 };
-
-}

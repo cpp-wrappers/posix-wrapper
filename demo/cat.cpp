@@ -23,20 +23,18 @@ exit 0
 #include <posix/default_error_handler.cpp>
 
 int main(int argc, char** argv) {
-	using namespace posix;
-
 	if(argc != 2) {
-		std_err.write_from(c_string{ "usage: cat <path>" });
+		posix::std_err.write_from(c_string{ "usage: cat <path>" });
 		posix::abort();
 	}
 
-	own_file f = open_file(
+	body<posix::file> f = open_file(
 		c_string{ argv[1] },
-		file_access_modes{ file_access_mode::read }
+		posix::file_access_modes{ posix::file_access_mode::read }
 	);
 
 	array<char, 65536> data;
 	while(nuint read = f->read_to(data)) {
-		std_out.write_from(data, read);
+		posix::std_out.write_from(data, read);
 	}
 }

@@ -2,22 +2,30 @@
 
 #include "./file_descriptor.hpp"
 
+#include <body.hpp>
+#include <exchange.hpp>
+
 extern "C" int close(int fd);
 
 namespace posix {
 
 	template<typename ErrorHandler>
-	inline void try_close_file(
-		posix::file_descriptor fd, ErrorHandler error_handler
+	inline void try_close(
+		handle<posix::file> fd, ErrorHandler error_handler
 	) {
-		int result = ::close(fd.number_);
+		int result = ::close(fd.underlying());
 		if(result == -1) {
 			error_handler(posix::latest_error());
 		}
 	}
 
-	inline void close_file(posix::file_descriptor fd) {
-		posix::try_close_file(fd, posix::error_handler);
+	inline void close(handle<posix::file> fd) {
+		posix::try_close(fd, posix::error_handler);
 	}
 
+}
+
+template<>
+constexpr void body<posix::file>::do_destroy() {
+	posix::close(this->soul_handle_);
 }

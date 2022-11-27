@@ -5,7 +5,7 @@
 namespace posix {
 
 enum class file_access_mode {
-	#ifdef __MINGW64__
+	#if __MINGW64__
 	read       = 0x0000,
 	write      = 0x0001,
 	read_write = 0x0002,
