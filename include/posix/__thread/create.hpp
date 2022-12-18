@@ -50,7 +50,7 @@ namespace posix {
 			forward<Function>(func),
 			arg,
 			posix::no_return_error_handler
-		).value();
+		).get();
 	}
 
 	template<typename Function>
@@ -58,7 +58,7 @@ namespace posix {
 		return try_create_thread(
 			forward<Function>(func),
 			posix::no_return_error_handler
-		).value();
+		).get();
 	}
 
 }

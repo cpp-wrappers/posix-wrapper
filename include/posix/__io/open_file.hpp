@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./file_descriptor.hpp"
+#include "./file.hpp"
 #include "../error_handler.hpp"
 
 #include <enum_flags.hpp>
@@ -27,7 +27,7 @@ namespace posix {
 	inline body<posix::file> open_file(
 		any_c_string auto name, file_access_modes modes
 	) {
-		return move(try_open_file(name, modes, posix::error_handler).value());
+		return try_open_file(name, modes, posix::error_handler).get();
 	}
 
 }

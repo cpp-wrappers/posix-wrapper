@@ -2,15 +2,15 @@
 
 #if __MINGW32__ || __gnu_linux__
 
-#include "./file_descriptor.hpp"
+#include "./file.hpp"
 
 extern "C" void* __acrt_iob_func(unsigned index);
 
 namespace posix {
 
-	static constexpr handle<file> std_in  { 0 };
-	static constexpr handle<file> std_out { 1 };
-	static constexpr handle<file> std_err { 2 };
+	static constexpr handle<posix::file> std_in  { 0 };
+	static constexpr handle<posix::file> std_out { 1 };
+	static constexpr handle<posix::file> std_err { 2 };
 
 }
 
