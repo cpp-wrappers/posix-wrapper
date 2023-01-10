@@ -5,23 +5,34 @@
 #include <handle.hpp>
 #include <body.hpp>
 #include <optional.hpp>
+#include <array.hpp>
 
 namespace posix {
 
 	struct mutex;
 
-#if __MINGW64__
-	using mutex_handle_underlying = int64;
-#else
-	static_assert(false)
-#endif
+	using mutex_handle_underlying = 
+	#if __MINGW64__
+		int64;
+	#elif __linux__
+		array<char, 40>;
+	#else
+		static_assert(false)
+	#endif
 
 }
 
 template<>
 struct handle_underlying_t<posix::mutex> {
 	using type = posix::mutex_handle_underlying;
-	static constexpr type invalid = type(-1);
+	static constexpr type invalid =
+		#if __MINGW64__
+			type(-1);
+		#elif __linux__
+			posix::mutex_handle_underlying{};
+		#else
+			static_assert(false)
+		#endif
 };
 
 template<>
@@ -34,11 +45,11 @@ struct handle_interface<posix::mutex> : handle_interface_base<posix::mutex> {
 	void try_unlock(Handler&& handler);
 
 	void lock() {
-		try_lock(posix::no_return_error_handler);
+		try_lock([](posix::error err) { posix::error_handler(err); });
 	}
 
 	void unlock() {
-		try_unlock(posix::no_return_error_handler);
+		try_unlock([](posix::error err) { posix::error_handler(err); });
 	}
 
 };

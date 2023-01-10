@@ -5,21 +5,21 @@
 
 #include <enum_flags.hpp>
 #include <body.hpp>
+#include <expected.hpp>
 
 extern "C" int open(const char *path, int oflag, ...);
 
 namespace posix {
 
-	template<typename ErrorHandler>
-	inline optional<body<posix::file>> try_open_file(
+	inline
+	expected<body<posix::file>, posix::error>
+	try_open_file(
 		c_string_of_unknown_size name,
-		file_access_modes modes,
-		ErrorHandler error_handler
+		file_access_modes modes
 	) {
 		int fd = ::open(name.iterator(), (int) modes);
 		if(fd == -1) {
-			error_handler(posix::latest_error());
-			return {};
+			return { posix::latest_error() };
 		}
 		return body<posix::file>{ fd };
 	}
@@ -27,7 +27,13 @@ namespace posix {
 	inline body<posix::file> open_file(
 		any_c_string auto name, file_access_modes modes
 	) {
-		return try_open_file(name, modes, posix::error_handler).get();
+		expected<body<posix::file>, posix::error> result = try_open_file(
+			name, modes
+		);
+		if(result.is_unexpected()) {
+			posix::error_handler(result.get_unexpected());
+		}
+		return move(result).get_expected();
 	}
 
 }

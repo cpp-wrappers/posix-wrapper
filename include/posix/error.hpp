@@ -6,10 +6,12 @@ extern "C" char* strerror(int errnum);
 
 namespace posix {
 
-struct error {
+class error {
 	int value_;
+public:
+	error(int value) : value_(value) {}
 
-	operator int() const {
+	explicit operator int() const {
 		return value_;
 	}
 

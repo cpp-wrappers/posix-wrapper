@@ -10,6 +10,7 @@ clang++ \
 	-Wall \
 	-Wextra \
 	-g \
+	-I${root}/include \
 	-I${root}/../core/include \
 	-o ${root}/build/cat \
 	${BASH_SOURCE[0]}

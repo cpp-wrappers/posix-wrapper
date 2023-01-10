@@ -21,12 +21,15 @@ namespace posix {
 	}
 
 	inline void destroy(handle<posix::mutex_attribute> m) {
-		try_destroy(m, posix::no_return_error_handler);
+		try_destroy(
+			m,
+			[](posix::error err) { posix::error_handler(err); }
+		);
 	}
 
 }
 
 template<>
-constexpr void body<posix::mutex_attribute>::do_destroy() {
+inline void body<posix::mutex_attribute>::do_destroy() {
 	posix::destroy(soul_handle_);
 }

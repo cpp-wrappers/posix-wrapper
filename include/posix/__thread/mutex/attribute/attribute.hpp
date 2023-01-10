@@ -10,8 +10,11 @@ namespace posix {
 
 	struct mutex_attribute;
 
+	using mutex_attribute_handle_underlying = 
 #if __MINGW64__
-	using mutex_attribute_handle_underlying = unsigned int;
+		unsigned int;
+#elif __linux__
+		uint_of_atoms<4>;
 #else
 	static_assert(false)
 #endif
@@ -33,7 +36,10 @@ struct handle_interface<posix::mutex_attribute>
 	void try_set_type(posix::mutex_attribute_type, Handler&&);
 
 	void set_type(posix::mutex_attribute_type type) {
-		try_set_type(type, posix::no_return_error_handler);
+		try_set_type(
+			type,
+			[](posix::error err) { posix::error_handler(err); }
+		);
 	}
 
 };

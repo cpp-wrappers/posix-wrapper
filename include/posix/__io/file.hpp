@@ -38,7 +38,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 		);
 		if(result == -1) {
 			error_handler(posix::latest_error());
-			return 0;
+			__builtin_unreachable();
 		}
 		return result;
 	}
@@ -62,7 +62,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 		);
 		if(result == -1) {
 			error_handler(posix::latest_error());
-			return 0;
+			__builtin_unreachable();
 		}
 		return result;
 	}

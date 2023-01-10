@@ -17,7 +17,7 @@ namespace posix {
 		ForType* ptr = (ForType*) malloc(size_bytes);
 		if(ptr == nullptr) {
 			error_handler(posix::latest_error());
-			return { (ForType*) nullptr, 0 };
+			__builtin_unreachable();
 		}
 		return { ptr, size };
 	}
@@ -30,7 +30,7 @@ namespace posix {
 		ForType* ptr = (ForType*) calloc(size, sizeof(ForType));
 		if(ptr == nullptr) {
 			error_handler(posix::latest_error());
-			return { (ForType*) nullptr, 0 };
+			__builtin_unreachable();
 		}
 		return { ptr, size };
 	}
@@ -39,7 +39,8 @@ namespace posix {
 	inline span<ForType>
 	allocate_raw_memory_of(nuint size) {
 		return try_allocate_raw_memory_of<ForType>(
-			size, posix::error_handler
+			size,
+			[](posix::error err) { posix::error_handler(err); }
 		);
 	}
 
@@ -47,7 +48,8 @@ namespace posix {
 	inline span<ForType>
 	allocate_raw_zeroed_memory_of(nuint size) {
 		return try_allocate_raw_zeroed_memory_of<ForType>(
-			size, posix::error_handler
+			size,
+			[](posix::error err) { posix::error_handler(err); }
 		);
 	}
 
@@ -85,7 +87,8 @@ namespace posix {
 	inline memory_for_range_of<ForType>
 	allocate_memory_for(nuint size) {
 		return try_allocate_memory_for<ForType>(
-			size, posix::error_handler
+			size,
+			[](posix::error err) { posix::error_handler(err); }
 		);
 	}
 
@@ -93,14 +96,17 @@ namespace posix {
 	inline memory_for_range_of<ForType>
 	allocate_zeroed_memory_for(nuint size) {
 		return try_allocate_zeroed_memory_for<ForType>(
-			size, posix::error_handler
+			size,
+			[](posix::error err) { posix::error_handler(err); }
 		);
 	}
 
 	template<typename ForType>
 	inline memory_for<ForType>
 	allocate_memory_for() {
-		return try_allocate_memory_for<ForType>(posix::error_handler);
+		return try_allocate_memory_for<ForType>(
+			[](posix::error err) { posix::error_handler(err); }
+		);
 	}
 
 }

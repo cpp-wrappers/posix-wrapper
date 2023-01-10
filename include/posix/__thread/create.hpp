@@ -4,6 +4,7 @@
 #include "../error_handler.hpp"
 
 #include <tuple.hpp>
+#include <expected.hpp>
 
 extern "C" int pthread_create(
 	posix::thread_handle_underlying* thread,
@@ -12,9 +13,9 @@ extern "C" int pthread_create(
 
 namespace posix {
 
-	template<typename Function, typename Arg, typename ErrorHandler>
-	optional<handle<thread>> try_create_thread(
-		Function function, Arg* arg_ptr, ErrorHandler&& error_handler
+	template<typename Function, typename Arg>
+	expected<handle<thread>, posix::error> try_create_thread(
+		Function&& function, Arg& arg
 	) {
 		thread_handle_underlying thread_ptr;
 
@@ -22,43 +23,35 @@ namespace posix {
 			&thread_ptr,
 			nullptr,
 			function,
-			(void*) arg_ptr
+			(void*) &arg
 		);
 
 		if(result != 0) {
-			error_handler(posix::error{ result });
-			return {};
+			return { posix::error{ result } };
 		}
 
 		return handle<thread>{ thread_ptr };
 	}
 
-	template<typename Function, typename ErrorHandler>
-	optional<handle<thread>> try_create_thread(
-		Function function, ErrorHandler&& error_handler
-	) {
-		return try_create_thread(
-			forward<Function>(function),
-			(void*) nullptr,
-			forward<ErrorHandler>(error_handler)
-		);
-	}
-
 	template<typename Function, typename Arg>
-	handle<thread> create_thread(Function func, Arg& arg) {
-		return try_create_thread(
-			forward<Function>(func),
-			arg,
-			posix::no_return_error_handler
-		).get();
+	handle<thread> create_thread(
+		Function&& function, Arg& arg
+	) {
+		expected<handle<thread>, posix::error> result = try_create_thread(
+			forward<Function>(function), arg
+		);
+		if(result.is_unexpected()) {
+			posix::error_handler(result.get_unexpected());
+		}
+		return move(result).get_expected();
 	}
 
 	template<typename Function>
-	handle<thread> create_thread(Function func) {
-		return try_create_thread(
-			forward<Function>(func),
-			posix::no_return_error_handler
-		).get();
+	handle<thread> create_thread(Function&& func) {
+		int dummy;
+		return create_thread(
+			forward<Function>(func), dummy	
+		);
 	}
 
 }

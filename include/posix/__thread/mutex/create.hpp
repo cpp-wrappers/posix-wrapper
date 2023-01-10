@@ -35,7 +35,7 @@ namespace posix {
 	) {
 		return try_create_mutex(
 			attribute,
-			posix::no_return_error_handler
+			[](posix::error err) { posix::error_handler(err); }
 		).get();
 	}
 

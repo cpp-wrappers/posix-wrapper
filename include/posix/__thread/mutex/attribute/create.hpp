@@ -25,7 +25,9 @@ namespace posix {
 	}
 
 	inline body<posix::mutex_attribute> create_mutex_attribute() {
-		return try_create_mutex_attribute(posix::no_return_error_handler).get();
+		return try_create_mutex_attribute(
+			[](posix::error err) { posix::error_handler(err); }
+		).get();
 	}
 
 }

@@ -20,12 +20,12 @@ namespace posix {
 	}
 
 	inline void close(handle<posix::file> fd) {
-		posix::try_close(fd, posix::error_handler);
+		posix::try_close(fd, [](auto err) { posix::error_handler(err); });
 	}
 
 }
 
 template<>
-constexpr void body<posix::file>::do_destroy() {
+inline void body<posix::file>::do_destroy() {
 	posix::close(this->soul_handle_);
 }
