@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../error.hpp"
-#include "../error_handler.hpp"
+#include "../__internal/unexpected_handler.hpp"
 #include "./file_access_mode.hpp"
 #include "./move_offset.hpp"
 
@@ -29,7 +29,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_read_to(
-		Range&& range, ErrorHandler error_handler
+		Range&& range, ErrorHandler unexpected_handler
 	) const {
 		nint result = ::read(
 			underlying(),
@@ -37,7 +37,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 			range_size(range) * sizeof(range_element_type<Range>)
 		);
 		if(result == -1) {
-			error_handler(posix::latest_error());
+			unexpected_handler(posix::latest_error());
 			__builtin_unreachable();
 		}
 		return result;
@@ -47,13 +47,13 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 	nuint read_to(Range&& range) const {
 		return try_read_to(
 			forward<Range>(range),
-			[](posix::error e) { posix::error_handler(e); }
+			[](posix::error e) { posix::unexpected_handler(e); }
 		);
 	}
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_write_from(
-		Range&& range, nuint size, ErrorHandler&& error_handler
+		Range&& range, nuint size, ErrorHandler&& unexpected_handler
 	) const {
 		nint result = ::write(
 			underlying(),
@@ -61,7 +61,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 			size * sizeof(range_element_type<Range>)
 		);
 		if(result == -1) {
-			error_handler(posix::latest_error());
+			unexpected_handler(posix::latest_error());
 			__builtin_unreachable();
 		}
 		return result;
@@ -69,13 +69,13 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_write_from(
-		Range&& range, ErrorHandler&& error_handler
+		Range&& range, ErrorHandler&& unexpected_handler
 	) const {
 		auto size = range_size(range);
 		return try_write_from(
 			forward<Range>(range),
 			size,
-			forward<ErrorHandler>(error_handler)
+			forward<ErrorHandler>(unexpected_handler)
 		);
 	}
 
@@ -83,7 +83,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 	nuint write_from(Range&& range, nuint size) const {
 		return try_write_from(
 			forward<Range>(range), size,
-			[](posix::error e) { posix::error_handler(e); }
+			[](posix::error e) { posix::unexpected_handler(e); }
 		);
 	}
 

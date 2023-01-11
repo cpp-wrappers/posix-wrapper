@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./thread.hpp"
-#include "../error_handler.hpp"
+#include "../__internal/unexpected_handler.hpp"
 
 #include <tuple.hpp>
 #include <expected.hpp>
@@ -41,7 +41,7 @@ namespace posix {
 			forward<Function>(function), arg
 		);
 		if(result.is_unexpected()) {
-			posix::error_handler(result.get_unexpected());
+			posix::unexpected_handler(result.get_unexpected());
 		}
 		return move(result).get_expected();
 	}

@@ -26,11 +26,11 @@ class memory_for_range_of : public span<storage<ForType>> {
 
 	template<typename ForType0, typename ErrorHandler>
 	friend inline memory_for_range_of<ForType0>
-	try_allocate_memory_for(nuint size, ErrorHandler&& error_handler);
+	try_allocate_memory_for(nuint size, ErrorHandler&& unexpected_handler);
 
 	template<typename ForType0, typename ErrorHandler>
 	friend inline memory_for_range_of<ForType0>
-	try_allocate_zeroed_memory_for(nuint size, ErrorHandler&& error_handler);
+	try_allocate_zeroed_memory_for(nuint size, ErrorHandler&& unexpected_handler);
 
 public:
 

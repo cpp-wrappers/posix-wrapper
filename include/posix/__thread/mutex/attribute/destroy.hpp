@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./attribute.hpp"
-#include "../../../error_handler.hpp"
+#include "../../../__internal/unexpected_handler.hpp"
 
 #include <exchange.hpp>
 #include <body.hpp>
@@ -23,7 +23,7 @@ namespace posix {
 	inline void destroy(handle<posix::mutex_attribute> m) {
 		try_destroy(
 			m,
-			[](posix::error err) { posix::error_handler(err); }
+			[](posix::error err) { posix::unexpected_handler(err); }
 		);
 	}
 

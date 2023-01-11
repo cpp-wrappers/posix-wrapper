@@ -9,7 +9,7 @@ namespace posix {
 	struct thread;
 
 	using thread_handle_underlying =
-	#if __MINGW64__
+	#if __MINGW32__
 		uint64;
 	#elif __linux__
 		unsigned long int;

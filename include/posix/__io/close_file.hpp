@@ -11,16 +11,16 @@ namespace posix {
 
 	template<typename ErrorHandler>
 	inline void try_close(
-		handle<posix::file> fd, ErrorHandler error_handler
+		handle<posix::file> fd, ErrorHandler unexpected_handler
 	) {
 		int result = ::close(fd.underlying());
 		if(result == -1) {
-			error_handler(posix::latest_error());
+			unexpected_handler(posix::latest_error());
 		}
 	}
 
 	inline void close(handle<posix::file> fd) {
-		posix::try_close(fd, [](auto err) { posix::error_handler(err); });
+		posix::try_close(fd, [](auto err) { posix::unexpected_handler(err); });
 	}
 
 }

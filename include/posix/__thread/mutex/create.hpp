@@ -3,7 +3,7 @@
 #include "./mutex.hpp"
 #include "./attribute/attribute.hpp"
 #include "../../error.hpp"
-#include "../../error_handler.hpp"
+#include "../../__internal/unexpected_handler.hpp"
 
 #include <optional.hpp>
 #include <body.hpp>
@@ -35,7 +35,7 @@ namespace posix {
 	) {
 		return try_create_mutex(
 			attribute,
-			[](posix::error err) { posix::error_handler(err); }
+			[](posix::error err) { posix::unexpected_handler(err); }
 		).get();
 	}
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./library.hpp"
-#include "../error_handler.hpp"
+#include "./handle.hpp"
+#include "../__internal/unexpected_handler.hpp"
 
 #include <optional.hpp>
 #include <c_string.hpp>
@@ -33,7 +33,7 @@ namespace posix {
 		open_library_flag flag = open_library_flag::now
 	) {
 		return try_open_library(file, flag)
-			.if_has_no_value([]{ posix::error_handler(); })
+			.if_has_no_value([]{ posix::unexpected_handler(); })
 			.get();
 	}
 

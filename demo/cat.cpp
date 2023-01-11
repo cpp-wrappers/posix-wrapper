@@ -21,7 +21,7 @@ exit 0
 #include <posix/abort.hpp>
 #include <array.hpp>
 
-#include <posix/default_error_handler.cpp>
+#include <posix/__internal/default_unexpected_handler.cpp>
 
 int main(int argc, char** argv) {
 	if(argc != 2) {

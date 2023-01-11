@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./type.hpp"
-#include "../../../error_handler.hpp"
+#include "../../../__internal/unexpected_handler.hpp"
 
 #include <body.hpp>
 #include <integer.hpp>
@@ -11,7 +11,7 @@ namespace posix {
 	struct mutex_attribute;
 
 	using mutex_attribute_handle_underlying = 
-#if __MINGW64__
+#if __MINGW32__
 		unsigned int;
 #elif __linux__
 		uint_of_atoms<4>;
@@ -38,7 +38,7 @@ struct handle_interface<posix::mutex_attribute>
 	void set_type(posix::mutex_attribute_type type) {
 		try_set_type(
 			type,
-			[](posix::error err) { posix::error_handler(err); }
+			[](posix::error err) { posix::unexpected_handler(err); }
 		);
 	}
 
