@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../error.hpp"
-#include "../__internal/unexpected_handler.hpp"
+#include "../unhandled.hpp"
 #include "./file_access_mode.hpp"
 #include "./move_offset.hpp"
 
@@ -45,10 +45,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 
 	template<contiguous_range Range>
 	nuint read_to(Range&& range) const {
-		return try_read_to(
-			forward<Range>(range),
-			[](posix::error e) { posix::unexpected_handler(e); }
-		);
+		return try_read_to(::forward<Range>(range), posix::unhandled);
 	}
 
 	template<contiguous_range Range, typename ErrorHandler>
@@ -81,10 +78,7 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 
 	template<contiguous_range Range>
 	nuint write_from(Range&& range, nuint size) const {
-		return try_write_from(
-			forward<Range>(range), size,
-			[](posix::error e) { posix::unexpected_handler(e); }
-		);
+		return try_write_from(forward<Range>(range), size, posix::unhandled);
 	}
 
 	template<contiguous_range Range>

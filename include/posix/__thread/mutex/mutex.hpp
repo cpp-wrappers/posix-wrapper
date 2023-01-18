@@ -1,21 +1,28 @@
 #pragma once
 
-#include "../../__internal/unexpected_handler.hpp"
+#include "../../unhandled.hpp"
 
 #include <handle.hpp>
 #include <body.hpp>
 #include <optional.hpp>
 #include <array.hpp>
+#include <storage.hpp>
 
 namespace posix {
 
 	struct mutex;
 
+	#if __linux__
+	struct mutex_storage : array<char, 40> {
+		constexpr mutex_storage() {}
+	};
+	#endif
+
 	using mutex_handle_underlying = 
 	#if __MINGW32__
 		int64;
 	#elif __linux__
-		array<char, 40>;
+		mutex_storage;
 	#else
 		static_assert(false)
 	#endif
@@ -44,12 +51,7 @@ struct handle_interface<posix::mutex> : handle_interface_base<posix::mutex> {
 	template<typename Handler>
 	void try_unlock(Handler&& handler);
 
-	void lock() {
-		try_lock([](posix::error err) { posix::unexpected_handler(err); });
-	}
-
-	void unlock() {
-		try_unlock([](posix::error err) { posix::unexpected_handler(err); });
-	}
+	void lock() { try_lock(posix::unhandled); }
+	void unlock() { try_unlock(posix::unhandled); }
 
 };

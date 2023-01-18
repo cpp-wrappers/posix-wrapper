@@ -19,7 +19,7 @@ exit 0
 
 #include <posix/thread.hpp>
 
-#include <posix/__internal/default_unexpected_handler.cpp>
+#include <posix/default_unhandled.cpp>
 
 int main() {
 	auto f = [](void*) {

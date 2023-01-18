@@ -1,20 +1,27 @@
 #pragma once
 
 #include "./type.hpp"
-#include "../../../__internal/unexpected_handler.hpp"
+#include "../../../unhandled.hpp"
 
 #include <body.hpp>
 #include <integer.hpp>
+#include <array.hpp>
 
 namespace posix {
 
 	struct mutex_attribute;
 
+	#if __linux__
+	struct mutex_attribute_storage : array<char, 4> {
+		constexpr mutex_attribute_storage() {}
+	};
+	#endif
+
 	using mutex_attribute_handle_underlying = 
 #if __MINGW32__
 		unsigned int;
 #elif __linux__
-		uint_of_atoms<4>;
+		mutex_attribute_storage;
 #else
 	static_assert(false)
 #endif
@@ -24,7 +31,7 @@ namespace posix {
 template<>
 struct handle_underlying_t<posix::mutex_attribute> {
 	using type = posix::mutex_attribute_handle_underlying;
-	static constexpr type invalid = -1;
+	static constexpr type invalid = type( -1 );
 };
 
 template<>
@@ -36,10 +43,7 @@ struct handle_interface<posix::mutex_attribute>
 	void try_set_type(posix::mutex_attribute_type, Handler&&);
 
 	void set_type(posix::mutex_attribute_type type) {
-		try_set_type(
-			type,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		try_set_type(type, posix::unhandled);
 	}
 
 };

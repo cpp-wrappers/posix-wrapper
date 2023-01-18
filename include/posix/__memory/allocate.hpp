@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./memory.hpp"
-#include "../__internal/unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 extern "C" void* malloc(nuint size);
 extern "C" void *calloc(nuint elements_number, nuint element_size);
@@ -38,18 +38,14 @@ namespace posix {
 	template<typename ForType>
 	inline span<ForType>
 	allocate_raw_memory_of(nuint size) {
-		return try_allocate_raw_memory_of<ForType>(
-			size,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		return try_allocate_raw_memory_of<ForType>(size, posix::unhandled);
 	}
 
 	template<typename ForType>
 	inline span<ForType>
 	allocate_raw_zeroed_memory_of(nuint size) {
 		return try_allocate_raw_zeroed_memory_of<ForType>(
-			size,
-			[](posix::error err) { posix::unexpected_handler(err); }
+			size, posix::unhandled
 		);
 	}
 
@@ -86,27 +82,19 @@ namespace posix {
 	template<typename ForType>
 	inline memory_for_range_of<ForType>
 	allocate_memory_for(nuint size) {
-		return try_allocate_memory_for<ForType>(
-			size,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		return try_allocate_memory_for<ForType>(size, posix::unhandled);
 	}
 
 	template<typename ForType>
 	inline memory_for_range_of<ForType>
 	allocate_zeroed_memory_for(nuint size) {
-		return try_allocate_zeroed_memory_for<ForType>(
-			size,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		return try_allocate_zeroed_memory_for<ForType>(size, posix::unhandled);
 	}
 
 	template<typename ForType>
 	inline memory_for<ForType>
 	allocate_memory_for() {
-		return try_allocate_memory_for<ForType>(
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		return try_allocate_memory_for<ForType>(posix::unhandled);
 	}
 
 }

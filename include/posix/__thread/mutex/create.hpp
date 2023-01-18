@@ -3,9 +3,9 @@
 #include "./mutex.hpp"
 #include "./attribute/attribute.hpp"
 #include "../../error.hpp"
-#include "../../__internal/unexpected_handler.hpp"
+#include "../../unhandled.hpp"
 
-#include <optional.hpp>
+#include <expected.hpp>
 #include <body.hpp>
 
 extern "C" int pthread_mutex_init(
@@ -15,16 +15,15 @@ extern "C" int pthread_mutex_init(
 
 namespace posix {
 
-	template<typename Handler>
-	optional<body<posix::mutex>> try_create_mutex(
-		const body<posix::mutex_attribute>& attribute,
-		Handler&& handler
+	inline
+	expected<body<posix::mutex>, posix::error>
+	try_create_mutex(
+		const body<posix::mutex_attribute>& attribute
 	) {
 		posix::mutex_handle_underlying m;
 		int result = ::pthread_mutex_init(&m, &attribute->underlying());
 		if(result != 0) {
-			handler(posix::error{ result });
-			return {};
+			return { posix::error{ result } };
 		}
 
 		return body<posix::mutex>{ m };
@@ -33,10 +32,14 @@ namespace posix {
 	inline body<posix::mutex> create_mutex(
 		const body<posix::mutex_attribute>& attribute
 	) {
-		return try_create_mutex(
-			attribute,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		).get();
+		expected<body<posix::mutex>, posix::error> result = try_create_mutex(
+			attribute
+		);
+		if(result.is_unexpected()) {
+			posix::unhandled();
+			__builtin_unreachable();
+		}
+		return move(result).get_expected();
 	}
 
 }

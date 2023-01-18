@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./attribute.hpp"
-#include "../../../__internal/unexpected_handler.hpp"
+#include "../../../unhandled.hpp"
 
 #include <exchange.hpp>
 #include <body.hpp>
@@ -12,19 +12,20 @@ extern "C" int pthread_mutexattr_destroy(
 
 namespace posix {
 
-	template<typename Handler>
-	void try_destroy(handle<posix::mutex_attribute> m, Handler&& handler) {
+	inline optional<posix::error>
+	try_destroy(handle<posix::mutex_attribute> m) {
 		int result = pthread_mutexattr_destroy(&m.underlying());
 		if(result != 0) {
-			handler(posix::error{ result });
+			return posix::error{ result };
 		}
+		return {};
 	}
 
 	inline void destroy(handle<posix::mutex_attribute> m) {
-		try_destroy(
-			m,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		optional<posix::error> result = try_destroy(m);
+		if(result.has_value()) {
+			posix::unhandled(result.get());
+		}
 	}
 
 }

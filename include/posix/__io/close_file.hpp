@@ -20,7 +20,7 @@ namespace posix {
 	}
 
 	inline void close(handle<posix::file> fd) {
-		posix::try_close(fd, [](auto err) { posix::unexpected_handler(err); });
+		posix::try_close(fd, posix::unhandled);
 	}
 
 }

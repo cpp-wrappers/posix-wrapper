@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./file.hpp"
-#include "../__internal/unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 #include <enum_flags.hpp>
 #include <body.hpp>
@@ -31,7 +31,7 @@ namespace posix {
 			name, modes
 		);
 		if(result.is_unexpected()) {
-			posix::unexpected_handler(result.get_unexpected());
+			posix::unhandled(result.get_unexpected());
 		}
 		return move(result).get_expected();
 	}

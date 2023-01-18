@@ -1,9 +1,9 @@
 #pragma once
 
 #include "attribute.hpp"
-#include "../../../__internal/unexpected_handler.hpp"
+#include "../../../unhandled.hpp"
 
-#include <optional.hpp>
+#include <expected.hpp>
 
 extern "C" int pthread_mutexattr_init(
 	posix::mutex_attribute_handle_underlying* attr
@@ -11,23 +11,25 @@ extern "C" int pthread_mutexattr_init(
 
 namespace posix {
 
-	template<typename Handler>
-	optional<body<posix::mutex_attribute>>
-	try_create_mutex_attribute(Handler&& handler) {
+	inline
+	expected<body<posix::mutex_attribute>, posix::error>
+	try_create_mutex_attribute() {
 		posix::mutex_attribute_handle_underlying a;
 		int result = ::pthread_mutexattr_init(&a);
 		if(result != 0) {
-			handler(posix::error{ result });
-			return {};
+			return posix::error{ result };
 		}
 
 		return body<posix::mutex_attribute>{ a };
 	}
 
 	inline body<posix::mutex_attribute> create_mutex_attribute() {
-		return try_create_mutex_attribute(
-			[](posix::error err) { posix::unexpected_handler(err); }
-		).get();
+		expected<body<posix::mutex_attribute>, posix::error> result
+			= try_create_mutex_attribute();
+		if(result.is_unexpected()) {
+			posix::unhandled(result.get_unexpected());
+		}
+		return move(result).get_expected();
 	}
 
 }

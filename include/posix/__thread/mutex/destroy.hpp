@@ -2,7 +2,7 @@
 
 #include "./mutex.hpp"
 #include "../../error.hpp"
-#include "../../__internal/unexpected_handler.hpp"
+#include "../../unhandled.hpp"
 
 #include <exchange.hpp>
 #include <body.hpp>
@@ -11,19 +11,19 @@ extern "C" int pthread_mutex_destroy(posix::mutex_handle_underlying*);
 
 namespace posix {
 
-	template<typename Handler>
-	void try_destroy(handle<posix::mutex> m, Handler&& handler) {
+	inline optional<posix::error> try_destroy(handle<posix::mutex> m) {
 		int result = pthread_mutex_destroy(&m.underlying());
 		if(result != 0) {
-			handler(posix::error{ result });
+			return posix::error{ result };
 		}
+		return {};
 	}
 
 	inline void destroy(handle<posix::mutex> m) {
-		try_destroy(
-			m,
-			[](posix::error err) { posix::unexpected_handler(err); }
-		);
+		try_destroy(m).if_has_value([](posix::error err) {
+			posix::unhandled(err);
+			__builtin_unreachable();
+		});
 	}
 
 }

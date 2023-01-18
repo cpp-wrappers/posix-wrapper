@@ -10,8 +10,9 @@ class error {
 	int value_;
 public:
 	error(int value) : value_(value) {}
+	error(const error& other) : value_(other.value_) {}
 
-	explicit operator int() const {
+	int code() const {
 		return value_;
 	}
 
@@ -36,7 +37,7 @@ public:
 
 	namespace posix {
 		inline error latest_error() {
-			return { *__errno_location() };
+			return error{ *__errno_location() };
 		}
 	}
 
