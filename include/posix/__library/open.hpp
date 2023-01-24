@@ -15,7 +15,7 @@ namespace posix {
 		now
 	};
 
-	inline optional<body<posix::library>>
+	inline optional<handle<posix::library>>
 	try_open_library(
 		any_c_string auto file,
 		open_library_flag flag = open_library_flag::now
@@ -27,7 +27,7 @@ namespace posix {
 		return { result };
 	}
 
-	inline body<posix::library>
+	inline handle<posix::library>
 	open_library(
 		any_c_string auto file,
 		open_library_flag flag = open_library_flag::now
