@@ -1,18 +1,16 @@
 #pragma once
 
+#include "./file_access_mode.hpp"
+#include "./offset.hpp"
+#include "./status.hpp"
 #include "../error.hpp"
 #include "../unhandled.hpp"
-#include "./file_access_mode.hpp"
-#include "./move_offset.hpp"
 
 #include <c_string.hpp>
 #include <range.hpp>
 #include <optional.hpp>
 #include <expected.hpp>
 #include <handle.hpp>
-
-extern "C" nint write(int fd, const void* buf, nuint nbytes);
-extern "C" nint read(int fd, void *buf, nuint nbytes);
 
 namespace posix {
 	struct file;
@@ -30,77 +28,41 @@ struct handle_interface<posix::file> : handle_interface_base<posix::file> {
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_read_to(
 		Range&& range, ErrorHandler unexpected_handler
-	) const {
-		nint result = ::read(
-			underlying(),
-			&*range_iterator(range),
-			range_size(range) * sizeof(range_element_type<Range>)
-		);
-		if(result == -1) {
-			unexpected_handler(posix::latest_error());
-			__builtin_unreachable();
-		}
-		return result;
-	}
+	) const;
 
 	template<contiguous_range Range>
-	nuint read_to(Range&& range) const {
-		return try_read_to(::forward<Range>(range), posix::unhandled);
-	}
+	nuint read_to(Range&& range) const;
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_write_from(
 		Range&& range, nuint size, ErrorHandler&& unexpected_handler
-	) const {
-		nint result = ::write(
-			underlying(),
-			&*range_iterator(range),
-			size * sizeof(range_element_type<Range>)
-		);
-		if(result == -1) {
-			unexpected_handler(posix::latest_error());
-			__builtin_unreachable();
-		}
-		return result;
-	}
+	) const;
 
 	template<contiguous_range Range, typename ErrorHandler>
 	nuint try_write_from(
 		Range&& range, ErrorHandler&& unexpected_handler
-	) const {
-		auto size = range_size(range);
-		return try_write_from(
-			forward<Range>(range),
-			size,
-			forward<ErrorHandler>(unexpected_handler)
-		);
-	}
+	) const;
 
 	template<contiguous_range Range>
-	nuint write_from(Range&& range, nuint size) const {
-		return try_write_from(forward<Range>(range), size, posix::unhandled);
-	}
+	nuint write_from(Range&& range, nuint size) const;
 
 	template<contiguous_range Range>
-	nuint write_from(Range&& range) const {
-		nuint size = range_size(range);
-		return write_from(forward<Range>(range), size);
-	}
+	nuint write_from(Range&& range) const;
 
-	posix::offset set_offset(posix::offset o) const {
-		return ::lseek(underlying(), o, (int) posix::__seek::set);
-	}
+	inline posix::offset
+	set_offset(posix::offset o) const;
 
-	posix::offset set_offset_relative_to_current(posix::offset o) const {
-		return ::lseek(underlying(), o, (int) posix::__seek::cur);
-	}
+	inline posix::offset
+	set_offset_relative_to_current(posix::offset o) const;
 
-	posix::offset set_offset_relative_to_end(posix::offset o) const {
-		return ::lseek(underlying(), o, (int) posix::__seek::end);
-	}
+	inline posix::offset
+	set_offset_relative_to_end(posix::offset o) const;
 
-	posix::offset set_offset_to_end() const {
-		return ::lseek(underlying(), 0, (int) posix::__seek::end);
-	}
+	inline posix::offset
+	set_offset_to_end() const;
+
+	inline posix::offset get_size() const;
+
+	inline posix::status get_status() const;
 
 };

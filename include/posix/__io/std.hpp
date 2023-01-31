@@ -4,7 +4,7 @@
 
 #include "./file.hpp"
 
-extern "C" void* __acrt_iob_func(unsigned index);
+extern "C" struct _iobuf* __acrt_iob_func(unsigned index);
 
 namespace posix {
 

@@ -1,4 +1,8 @@
 #include "./__io/file.hpp"
+#include "./__io/write.hpp"
+#include "./__io/read.hpp"
+#include "./__io/set_offset.hpp"
+#include "./__io/get_status.hpp"
 #include "./__io/std.hpp"
 #include "./__io/open_file.hpp"
 #include "./__io/close_file.hpp"

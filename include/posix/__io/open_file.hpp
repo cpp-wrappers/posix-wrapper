@@ -12,7 +12,7 @@ extern "C" int open(const char *path, int oflag, ...);
 namespace posix {
 
 	inline expected<handle<posix::file>, posix::error> try_open_file(
-		c_string_of_unknown_size name,
+		any_c_string auto name,
 		file_access_modes modes
 	) {
 		int fd = ::open(name.iterator(), (int) modes);
@@ -26,9 +26,10 @@ namespace posix {
 		any_c_string auto name,
 		file_access_modes modes
 	) {
-		expected<handle<posix::file>, posix::error> result = try_open_file(
-			name, modes
-		);
+		expected<handle<posix::file>, posix::error> result
+			= posix::try_open_file(
+				name, modes
+			);
 		if(result.is_unexpected()) {
 			posix::unhandled(result.get_unexpected());
 		}
