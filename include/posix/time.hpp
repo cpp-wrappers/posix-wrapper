@@ -2,7 +2,7 @@
 
 #include <integer.hpp>
 
-extern "C" int clock_gettime(int clock_id, void* tp);
+extern "C" int clock_gettime(int clock_id, struct timespec* tp);
 
 namespace posix {
 
@@ -23,7 +23,7 @@ namespace posix {
 
 		seconds_and_nanoseconds secods_and_nanoseconds() const {
 			seconds_and_nanoseconds t;
-			clock_gettime(id_, &t);
+			clock_gettime(id_, (struct timespec*) &t);
 			return t;
 		}
 
