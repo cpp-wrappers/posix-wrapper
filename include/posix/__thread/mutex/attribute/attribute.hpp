@@ -13,7 +13,9 @@ namespace posix {
 
 	#if __linux__
 	struct mutex_attribute_storage : array<char, 4> {
-		constexpr mutex_attribute_storage() {}
+		constexpr mutex_attribute_storage() :
+			array{ char(-1), char(-1), char(-1), char(-1) }
+		{}
 	};
 	#endif
 
@@ -31,7 +33,12 @@ namespace posix {
 template<>
 struct handle_underlying_t<posix::mutex_attribute> {
 	using type = posix::mutex_attribute_handle_underlying;
-	static constexpr type invalid = type( -1 );
+	static constexpr type invalid =
+	#if __MINGW32__
+		type( -1 );
+	#elif __linux__
+		{};
+	#endif
 };
 
 template<>
