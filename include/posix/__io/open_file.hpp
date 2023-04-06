@@ -12,7 +12,7 @@ extern "C" int open(const char *path, int oflag, ...);
 namespace posix {
 
 	inline expected<handle<posix::file>, posix::error> try_open_file(
-		any_c_string auto name,
+		contiguous_range auto&& name,
 		file_access_modes modes
 	) {
 		int fd = ::open(name.iterator(), (int) modes);
@@ -20,6 +20,17 @@ namespace posix {
 			return posix::latest_error();
 		}
 		return handle<posix::file>{ fd };
+	}
+
+	template<any_c_string Name>
+	inline expected<handle<posix::file>, posix::error> try_open_file(
+		Name name,
+		file_access_mode mode
+	) {
+		return try_open_file(
+			forward<Name>(name),
+			posix::file_access_modes { mode }
+		);
 	}
 
 	inline handle<posix::file> open_file(

@@ -14,7 +14,7 @@ enum class file_access_mode {
 	trunc      = 0x0200,
 	exclusive  = 0x0400,
 	text       = 0x4000,
-	binary     = 0x8000
+	binary     = 0x8000,
 	#elif __gnu_linux__
 
 	binary     = 00000,
@@ -25,11 +25,13 @@ enum class file_access_mode {
 	exclusive  = 00200,
 	trunc      = 01000,
 	append     = 02000,
-	text       = 04000
+	text       = 04000,
 
 	#else
 	static_assert(false);
 	#endif
+
+	binary_read = binary | read
 };
 
 using file_access_modes = enum_flags<file_access_mode>;

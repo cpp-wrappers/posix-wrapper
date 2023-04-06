@@ -50,10 +50,10 @@ public:
 	}
 
 	span<const ForType> as_span() const {
-		return { (const ForType*) &*this->iterator(), this->size() };
+		return { (const ForType*) this->iterator(), this->size() };
 	}
 	span<      ForType> as_span()       {
-		return { (      ForType*) &*this->iterator(), this->size() };
+		return { (      ForType*) this->iterator(), this->size() };
 	}
 
 };
