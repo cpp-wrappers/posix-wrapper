@@ -4,6 +4,7 @@
 
 #include <span.hpp>
 #include <storage.hpp>
+#include <exchange.hpp>
 
 namespace posix {
 
@@ -36,9 +37,30 @@ public:
 
 	memory_for_range_of() = default;
 
-	memory_for_range_of(memory_for_range_of&& other)
-		: base_type{ exchange((base_type&)other, base_type{}) }
+	memory_for_range_of(memory_for_range_of<ForType>&& other)
+		: base_type {
+			exchange(
+				(span<storage<ForType>>&) other,
+				span<storage<ForType>>{}
+			)
+		}
 	{}
+
+	template<same_as<remove_const<ForType>> Type>
+	requires type_is_const<ForType>
+	memory_for_range_of(memory_for_range_of<Type>&& other)
+		: base_type {
+			span {
+				(storage<const Type>*) other.iterator(),
+				other.size()
+			}
+		}
+	{
+		exchange(
+			(span<storage<ForType>>&) other,
+			span<storage<ForType>>{}
+		);
+	}
 
 	memory_for_range_of& operator = (memory_for_range_of&& other) {
 		((base_type&) *this) = exchange((base_type&)other, base_type{});
@@ -54,6 +76,15 @@ public:
 	}
 	span<      ForType> as_span()       {
 		return { (      ForType*) this->iterator(), this->size() };
+	}
+
+	template<typename Type>
+	span<const Type> as_span() const {
+		return { (const Type*) this->iterator(), this->size() };
+	}
+	template<typename Type>
+	span<      Type> as_span()       {
+		return { (      Type*) this->iterator(), this->size() };
 	}
 
 };

@@ -15,7 +15,7 @@ namespace posix {
 		contiguous_range auto&& name,
 		file_access_modes modes
 	) {
-		int fd = ::open(name.iterator(), (int) modes);
+		int fd = ::open((const char*) name.iterator(), (int) modes);
 		if(fd == -1) {
 			return posix::latest_error();
 		}
