@@ -24,5 +24,5 @@ exit 0
 int main() {
 	using namespace posix;
 
-	auto memory = posix::allocate_memory_for<uint8>(1024);
+	posix::memory<> memory = posix::allocate<>(1024);
 }

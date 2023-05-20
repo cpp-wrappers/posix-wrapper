@@ -8,74 +8,52 @@
 
 namespace posix {
 
-template<typename ForType>
-struct memory_for : storage<ForType> {
+template<nuint Size, nuint Alignment>
+class memory_of_size_and_alignment :
+	public span<storage_of_size_and_alignment<Size, Alignment>>
+{
+	using base_type = span<storage_of_size_and_alignment<Size, Alignment>>;
 
-	~memory_for() {
-		free_raw_memory((void*) this->data);
-	}
-
-};
-
-template<typename ForType>
-class memory_for_range_of : public span<storage<ForType>> {
-	using base_type = span<storage<ForType>>;
-
-	memory_for_range_of(storage<ForType>* ptr, nuint size) :
+	memory_of_size_and_alignment(
+		storage_of_size_and_alignment<Size, Alignment>* ptr,
+		nuint size
+	) :
 		base_type{ ptr, size }
 	{}
 
-	template<typename ForType0, typename ErrorHandler>
-	friend inline memory_for_range_of<ForType0>
-	try_allocate_memory_for(nuint size, ErrorHandler&& unexpected_handler);
+	template<nuint Size0, nuint Alignment0, typename ErrorHandler>
+	friend inline memory_of_size_and_alignment<Size0, Alignment0>
+	try_allocate(
+		nuint elements_number, ErrorHandler&& unexpected_handler
+	);
 
-	template<typename ForType0, typename ErrorHandler>
-	friend inline memory_for_range_of<ForType0>
-	try_allocate_zeroed_memory_for(nuint size, ErrorHandler&& unexpected_handler);
+	template<nuint Size0, nuint Alignment0, typename ErrorHandler>
+	friend inline memory_of_size_and_alignment<Size0, Alignment0>
+	try_allocate_zeroed(
+		nuint elements_number, ErrorHandler&& unexpected_handler
+	);
 
 public:
 
-	memory_for_range_of() = default;
+	memory_of_size_and_alignment() = default;
 
-	memory_for_range_of(memory_for_range_of<ForType>&& other)
+	memory_of_size_and_alignment(
+		memory_of_size_and_alignment&& other
+	)
 		: base_type {
-			exchange(
-				(span<storage<ForType>>&) other,
-				span<storage<ForType>>{}
-			)
+			exchange((base_type&)other, base_type{})
 		}
 	{}
 
-	template<same_as<remove_const<ForType>> Type>
-	requires type_is_const<ForType>
-	memory_for_range_of(memory_for_range_of<Type>&& other)
-		: base_type {
-			span {
-				(storage<const Type>*) other.iterator(),
-				other.size()
-			}
-		}
-	{
-		exchange(
-			(span<storage<ForType>>&) other,
-			span<storage<ForType>>{}
-		);
-	}
-
-	memory_for_range_of& operator = (memory_for_range_of&& other) {
+	memory_of_size_and_alignment& operator = (
+		memory_of_size_and_alignment&& other
+	) {
 		((base_type&) *this) = exchange((base_type&)other, base_type{});
 		return *this;
 	}
 
-	~memory_for_range_of() {
+	~memory_of_size_and_alignment() {
 		free_raw_memory((void*) base_type::iterator());
-	}
-
-	span<const ForType> as_span() const {
-		return { (const ForType*) this->iterator(), this->size() };
-	}
-	span<      ForType> as_span()       {
-		return { (      ForType*) this->iterator(), this->size() };
 	}
 
 	template<typename Type>
@@ -83,6 +61,54 @@ public:
 		return { (const Type*) this->iterator(), this->size() };
 	}
 	template<typename Type>
+	span<      Type> as_span()       {
+		return { (      Type*) this->iterator(), this->size() };
+	}
+
+};
+
+template<typename Type = uint1a>
+class memory : public span<storage<Type>> {
+	using base_type = span<storage<Type>>;
+
+	memory(storage<Type>* ptr, nuint size) :
+		base_type{ ptr, size }
+	{}
+
+	template<typename Type0, typename ErrorHandler>
+	friend inline memory<Type0>
+	try_allocate(
+		nuint elements_number, ErrorHandler&& unexpected_handler
+	);
+
+	template<typename Type0, typename ErrorHandler>
+	friend inline memory<Type0>
+	try_allocate_zeroed(
+		nuint elements_number, ErrorHandler&& unexpected_handler
+	);
+
+public:
+
+	memory() = default;
+
+	memory(memory&& other)
+		: base_type {
+			exchange((base_type&)other, base_type{})
+		}
+	{}
+
+	memory& operator = (memory&& other) {
+		((base_type&) *this) = exchange((base_type&)other, base_type{});
+		return *this;
+	}
+
+	~memory() {
+		free_raw_memory((void*) base_type::iterator());
+	}
+
+	span<const Type> as_span() const {
+		return { (const Type*) this->iterator(), this->size() };
+	}
 	span<      Type> as_span()       {
 		return { (      Type*) this->iterator(), this->size() };
 	}

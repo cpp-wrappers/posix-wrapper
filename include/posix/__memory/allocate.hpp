@@ -4,97 +4,100 @@
 #include "../unhandled.hpp"
 
 extern "C" void* malloc(nuint size);
-extern "C" void *calloc(nuint elements_number, nuint element_size);
 
 namespace posix {
 
-	template<typename ForType, typename ErrorHandler>
-	inline span<ForType>
-	try_allocate_raw_memory_of(
-		nuint size, ErrorHandler&& unexpected_handler
+	template<nuint Size, nuint Alignment, typename ErrorHandler>
+	requires (Size >= Alignment)
+	inline span<storage_of_size_and_alignment<Size, Alignment>>
+	try_allocate_raw(
+		nuint elements_number, ErrorHandler&& error_handler
 	) {
-		nuint size_bytes = sizeof(ForType) * size;
-		ForType* ptr = (ForType*) malloc(size_bytes);
+		void* ptr = malloc(elements_number * Size);
 		if(ptr == nullptr) {
-			unexpected_handler(posix::latest_error());
+			error_handler(posix::latest_error());
 			__builtin_unreachable();
 		}
-		return { ptr, size };
+		return {
+			(storage_of_size_and_alignment<Size, Alignment>*) ptr,
+			elements_number
+		};
 	}
 
-	template<typename ForType, typename ErrorHandler>
-	inline span<ForType>
-	try_allocate_raw_zeroed_memory_of(
-		nuint size, ErrorHandler&& unexpected_handler
+	template<typename Type, typename ErrorHandler>
+	inline span<storage<Type>>
+	try_allocate_raw(
+		nuint elements_number, ErrorHandler&& error_handler
 	) {
-		ForType* ptr = (ForType*) calloc(size, sizeof(ForType));
-		if(ptr == nullptr) {
-			unexpected_handler(posix::latest_error());
-			__builtin_unreachable();
-		}
-		return { ptr, size };
+		span<storage_of_size_and_alignment<sizeof(Type), alignof(Type)>> s
+			= try_allocate_raw<sizeof(Type), alignof(Type)>(
+				elements_number, forward<ErrorHandler>(error_handler)
+			);
+		return s.template cast<storage<Type>>();
 	}
 
-	template<typename ForType>
-	inline span<ForType>
-	allocate_raw_memory_of(nuint size) {
-		return try_allocate_raw_memory_of<ForType>(size, posix::unhandled);
-	}
-
-	template<typename ForType>
-	inline span<ForType>
-	allocate_raw_zeroed_memory_of(nuint size) {
-		return try_allocate_raw_zeroed_memory_of<ForType>(
-			size, posix::unhandled
+	template<nuint Size, nuint Alignment>
+	inline span<storage_of_size_and_alignment<Size, Alignment>>
+	allocate_raw(nuint elements_number) {
+		return try_allocate_raw<Size, Alignment>(
+			elements_number, posix::unhandled
 		);
 	}
 
-	template<typename ForType, typename ErrorHandler>
-	inline memory_for_range_of<ForType>
-	try_allocate_memory_for(nuint size, ErrorHandler&& unexpected_handler) {
-		auto ptr =
-			try_allocate_raw_memory_of<ForType>(
-				size, unexpected_handler
-			).iterator();
-		return { (storage<ForType>*) ptr, size };
+	template<typename Type>
+	inline span<storage<Type>>
+	allocate_raw(nuint elements_number) {
+		return try_allocate_raw<Type>(
+			elements_number, posix::unhandled
+		);
 	}
 
-	template<typename ForType, typename ErrorHandler>
-	inline memory_for_range_of<ForType>
-	try_allocate_zeroed_memory_for(nuint size, ErrorHandler&& unexpected_handler) {
-		auto ptr =
-			try_allocate_raw_zeroed_memory_of<ForType>(
-				size, unexpected_handler
-			).iterator();
-		return { (storage<ForType>*) ptr, size };
+	template<nuint Size, nuint Alignment, typename ErrorHandler>
+	inline memory_of_size_and_alignment<Size, Alignment>
+	try_allocate(
+		nuint elements_number, ErrorHandler&& error_handler
+	) {
+		span<storage_of_size_and_alignment<Size, Alignment>> s =
+			try_allocate_raw<Size, Alignment>(
+				elements_number,
+				error_handler
+			);
+		return {
+			s.iterator(),
+			s.size()
+		};
 	}
 
-	template<typename ForType, typename ErrorHandler>
-	inline memory_for<ForType>
-	try_allocate_memory_for(ErrorHandler&& unexpected_handler) {
-		ForType* ptr =
-			allocate_raw_memory_of<ForType>(
-				1, unexpected_handler
-			).iterator();
-		return *(memory_for<ForType>*) ptr; // not trivial, actually...
+	template<typename Type, typename ErrorHandler>
+	inline memory<Type>
+	try_allocate(
+		nuint elements_number, ErrorHandler&& error_handler
+	) {
+		span<storage<Type>> s =
+			try_allocate_raw<Type>(
+				elements_number,
+				error_handler
+			);
+		return {
+			s.iterator(),
+			s.size()
+		};
 	}
 
-	template<typename ForType>
-	inline memory_for_range_of<ForType>
-	allocate_memory_for(nuint size) {
-		return try_allocate_memory_for<ForType>(size, posix::unhandled);
+	template<nuint Size, nuint Alignment>
+	inline memory_of_size_and_alignment<Size, Alignment>
+	allocate(nuint elements_number) {
+		return try_allocate<Size, Alignment>(
+			elements_number, posix::unhandled
+		);
 	}
 
-	template<typename ForType>
-	inline memory_for_range_of<ForType>
-	allocate_zeroed_memory_for(nuint size) {
-		return try_allocate_zeroed_memory_for<ForType>(size, posix::unhandled);
-	}
-
-	template<typename ForType>
-	inline memory_for<ForType>
-	allocate_memory_for() {
-		return try_allocate_memory_for<ForType>(posix::unhandled);
+	template<typename Type = uint1a>
+	inline memory<Type>
+	allocate(nuint elements_number) {
+		return try_allocate<Type>(
+			elements_number, posix::unhandled
+		);
 	}
 
 }
