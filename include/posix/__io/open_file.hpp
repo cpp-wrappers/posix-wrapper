@@ -34,7 +34,7 @@ namespace posix {
 	}
 
 	inline handle<posix::file> open_file(
-		any_c_string auto name,
+		any_c_string<char> auto name,
 		file_access_modes modes
 	) {
 		expected<handle<posix::file>, posix::error> result
