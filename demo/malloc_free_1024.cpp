@@ -16,6 +16,8 @@ clang++ \
 exit 0
 #endif
 
+#include <array.hpp>
+
 #include <posix/io.hpp>
 #include <posix/memory.hpp>
 

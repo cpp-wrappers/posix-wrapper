@@ -29,11 +29,9 @@ namespace posix {
 	try_allocate_raw(
 		nuint elements_number, ErrorHandler&& error_handler
 	) {
-		span<storage_of_size_and_alignment<sizeof(Type), alignof(Type)>> s
-			= try_allocate_raw<sizeof(Type), alignof(Type)>(
-				elements_number, forward<ErrorHandler>(error_handler)
-			);
-		return s.template cast<storage<Type>>();
+		return try_allocate_raw<sizeof(Type), alignof(Type)>(
+			elements_number, forward<ErrorHandler>(error_handler)
+		).template cast<storage<Type>>();
 	}
 
 	template<nuint Size, nuint Alignment>
