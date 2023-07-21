@@ -71,6 +71,8 @@ template<typename Type = uint1a>
 class memory : public span<storage<Type>> {
 	using base_type = span<storage<Type>>;
 
+	static constexpr bool is_borrowed_range = false;
+
 	memory(storage<Type>* ptr, nuint size) :
 		base_type{ ptr, size }
 	{}
