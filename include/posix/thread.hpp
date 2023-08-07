@@ -3,6 +3,7 @@
 #include "./__thread/thread.hpp"
 #include "./__thread/create.hpp"
 #include "./__thread/self.hpp"
+#include "./__thread/sleep.hpp"
 
 #include "./__thread/mutex/mutex.hpp"
 #include "./__thread/mutex/create.hpp"
