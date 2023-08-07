@@ -41,6 +41,7 @@ public:
 	{}
 
 	memory& operator = (memory&& other) {
+		free_raw_memory((void*) base_type::iterator());
 		((base_type&) *this) = exchange((base_type&)other, base_type{});
 		return *this;
 	}
