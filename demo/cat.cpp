@@ -1,20 +1,5 @@
 #if 0
-d=`dirname ${BASH_SOURCE[0]}`
-root=`realpath ${d}/../`
-mkdir -p ${root}/build
-clang++ \
-	-std=c++20 \
-	-nostdinc++ \
-	-nostdinc \
-	-Iinclude \
-	-Wall \
-	-Wextra \
-	-g \
-	-I${root}/include \
-	-I${root}/../core/include \
-	-o ${root}/build/cat \
-	${BASH_SOURCE[0]}
-exit 0
+. `dirname ${BASH_SOURCE[0]}`/compile.sh
 #endif
 
 #include <posix/io.hpp>
