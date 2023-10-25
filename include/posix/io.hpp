@@ -6,3 +6,8 @@
 #include "./__io/std.hpp"
 #include "./__io/open_file.hpp"
 #include "./__io/close_file.hpp"
+
+#include "./__io/dir/open.hpp"
+#include "./__io/dir/read.hpp"
+#include "./__io/dir/close.hpp"
+#include "./__io/dir/make.hpp"

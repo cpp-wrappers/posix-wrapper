@@ -31,7 +31,8 @@ enum class file_access_mode {
 	static_assert(false);
 	#endif
 
-	binary_read = binary | read
+	binary_read = binary | read,
+	binary_write = binary | write
 };
 
 using file_access_modes = enum_flags<file_access_mode>;

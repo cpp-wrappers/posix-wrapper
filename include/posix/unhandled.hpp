@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./error.hpp"
-#include "./abort.hpp"
 
 namespace posix {
 
