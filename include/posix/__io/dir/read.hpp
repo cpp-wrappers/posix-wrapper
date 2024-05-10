@@ -15,8 +15,7 @@ namespace posix {
 	try_read_dir(handle<posix::dir> dir_ptr) {
 		auto prev_errno = posix::latest_error();
 
-		auto result =
-			(posix::dir_entry*)
+		auto result = (posix::dir_entry*)
 			::readdir((struct DIR*) dir_ptr.underlying());
 
 		auto errno = posix::latest_error();

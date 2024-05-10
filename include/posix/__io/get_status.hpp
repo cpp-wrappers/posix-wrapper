@@ -13,10 +13,10 @@ extern "C" int stat(const char* path, posix::status* buf);
 
 namespace posix {
 
-	template<any_c_string<char> Path, typename ErrorHandler>
+	template<typename ErrorHandler>
 	inline optional<posix::status>
 	try_get_file_status(
-		Path&& path,
+		c_string<char> path,
 		ErrorHandler&& error_handler
 	) {
 		status s;
@@ -28,7 +28,7 @@ namespace posix {
 		return s;
 	}
 
-	template<basic_range Path, typename ErrorHandler>
+	/*template<basic_range Path, typename ErrorHandler>
 	inline optional<posix::status>
 	try_get_file_status(
 		Path&& path,
@@ -43,7 +43,7 @@ namespace posix {
 				);
 			}
 		);
-	}
+	}*/
 
 	inline posix::status get_file_status(handle<posix::file> file) {
 		status s;
@@ -54,7 +54,7 @@ namespace posix {
 		return s;
 	}
 
-	inline posix::status get_file_status(any_c_string<char> auto path) {
+	inline posix::status get_file_status(c_string<char> path) {
 		return try_get_file_status(path, posix::unhandled).get();
 	}
 

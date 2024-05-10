@@ -1,5 +1,6 @@
 #include "./unhandled.hpp"
 #include "./io.hpp"
+#include "./abort.hpp"
 
 namespace posix {
 
@@ -8,7 +9,7 @@ namespace posix {
 	}
 
 	[[noreturn]] void unhandled_t::operator () (posix::error e) const {
-		std_err.write_from(e.to_string().sized());
+		std_err.write_from(e.to_string().sized_view());
 		posix::abort();
 	}
 

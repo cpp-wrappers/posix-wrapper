@@ -32,7 +32,9 @@ enum class file_access_mode {
 	#endif
 
 	binary_read = binary | read,
-	binary_write = binary | write
+	binary_write = binary | write,
+	binary_trunc_write = binary | trunc | write,
+	binary_read_write = binary | read_write
 };
 
 using file_access_modes = enum_flags<file_access_mode>;

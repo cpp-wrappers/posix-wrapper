@@ -44,19 +44,18 @@ namespace posix {
 		return handle<posix::file>{ fd };
 	}
 
-	template<any_c_string Name>
 	inline expected<handle<posix::file>, posix::error> try_open_file(
-		Name name,
+		c_string<char> name,
 		posix::file_access_mode access_mode
 	) {
 		return try_open_file(
-			forward<Name>(name),
+			name,
 			posix::file_access_modes { access_mode }
 		);
 	}
 
 	inline handle<posix::file> open_file(
-		any_c_string<char> auto name,
+		c_string<char> name,
 		posix::file_access_modes access_modes
 	) {
 		expected<handle<posix::file>, posix::error> result
@@ -70,7 +69,7 @@ namespace posix {
 	}
 
 	inline handle<posix::file> open_file(
-		any_c_string<char> auto name,
+		c_string<char> name,
 		posix::file_access_modes access_modes,
 		posix::file_modes file_modes
 	) {

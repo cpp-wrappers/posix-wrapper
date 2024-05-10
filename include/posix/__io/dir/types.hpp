@@ -3,6 +3,7 @@
 #include <integer.hpp>
 #include <handle.hpp>
 #include <c_string.hpp>
+#include <span.hpp>
 
 namespace posix {
 
@@ -57,7 +58,10 @@ template<>
 struct handle_interface<posix::dir_entry> :
 	handle_interface_base<posix::dir_entry>
 {
-	c_string_of_known_size<char> name() const {
-		return {this->underlying()->name_, this->underlying()->name_length_};
+	auto name() const {
+		return as_c_string_convertible(span {
+			this->underlying()->name_,
+			this->underlying()->name_length_
+		});
 	}
 };

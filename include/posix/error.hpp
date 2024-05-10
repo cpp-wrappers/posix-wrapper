@@ -16,7 +16,7 @@ public:
 		return value_;
 	}
 
-	c_string_of_unknown_size<char> to_string() const {
+	c_string<char> to_string() const {
 		return { strerror(value_) };
 	}
 

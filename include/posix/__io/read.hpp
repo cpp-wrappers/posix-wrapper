@@ -13,7 +13,7 @@ nuint handle_interface<posix::file>::try_read_to(
 		&*range_iterator(range),
 		range_size(range) * sizeof(range_element_type<Range>)
 	);
-	if(result == -1) {
+	if(int(result) == -1) {
 		unexpected_handler(posix::latest_error());
 		__builtin_unreachable();
 	}
