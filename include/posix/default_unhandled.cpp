@@ -9,7 +9,8 @@ namespace posix {
 	}
 
 	[[noreturn]] void unhandled_t::operator () (posix::error e) const {
-		std_err.write_from(e.to_string().sized_view());
+		auto str = e.to_string();
+		std_err.write_from(str, range{str}.get_or_compute_size());
 		posix::abort();
 	}
 
