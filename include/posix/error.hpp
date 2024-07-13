@@ -17,7 +17,7 @@ public:
 	}
 
 	c_string<char> to_string() const {
-		return { strerror(value_) };
+		return c_string{ strerror(value_) };
 	}
 
 };

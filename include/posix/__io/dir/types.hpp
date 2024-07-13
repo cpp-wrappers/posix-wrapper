@@ -59,9 +59,9 @@ struct handle_interface<posix::dir_entry> :
 	handle_interface_base<posix::dir_entry>
 {
 	auto name() const {
-		return as_c_string_convertible(span {
+		return c_string_view {
 			this->underlying()->name_,
 			this->underlying()->name_length_
-		});
+		};
 	}
 };

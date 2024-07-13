@@ -8,13 +8,13 @@
 
 namespace posix {
 
-template<typename Type = uint1a>
-class memory : public span<Type> {
+template<typename Type = uint1a, typename SizeType=nuint>
+class memory : public span<Type, SizeType> {
 	using base_type = span<Type>;
 
 	static constexpr bool is_borrowed_range = false;
 
-	memory(Type* ptr, nuint size) :
+	memory(Type* ptr, SizeType size) :
 		base_type{ ptr, size }
 	{}
 
@@ -50,10 +50,10 @@ public:
 		free_raw_memory((void*) base_type::iterator());
 	}
 
-	span<const Type> as_span() const {
+	span<const Type, SizeType> as_span() const {
 		return { (const Type*) this->iterator(), this->size() };
 	}
-	span<      Type> as_span()       {
+	span<      Type, SizeType> as_span()       {
 		return { (      Type*) this->iterator(), this->size() };
 	}
 
