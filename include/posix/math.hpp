@@ -9,6 +9,10 @@ static_assert(false);
 #endif
 
 #include <type.hpp>
+#include "./error.hpp"
+#include "./unhandled.hpp"
+
+float strtof(const char *str, char** end);
 
 namespace posix {
 
@@ -25,6 +29,15 @@ namespace posix {
 	template<same_as<long double> Type>
 	bool is_nan(Type value) {
 		return __isnanl(value);
+	}
+
+	inline float str_to_float(const char *str, char** end=nullptr) {
+		float result = strtof(str, end);
+		auto error = posix::latest_error();
+		if (error.code() != 0) {
+			posix::unhandled(error);
+		}
+		return result;
 	}
 
 }

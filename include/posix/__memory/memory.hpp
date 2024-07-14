@@ -8,24 +8,29 @@
 
 namespace posix {
 
-template<typename Type = uint1a, typename SizeType=nuint>
-class memory : public span<Type, SizeType> {
-	using base_type = span<Type, SizeType>;
-
-	static constexpr bool is_borrowed_range = false;
+template<
+	typename Type = uint1a,
+	typename SizeType=nuint,
+	typename IndexType = SizeType
+>
+class memory :
+	public span<Type, SizeType, IndexType>,
+	borrowed_range_mark<false>
+{
+	using base_type = span<Type, SizeType, IndexType>;
 
 	memory(Type* ptr, SizeType size) :
 		base_type{ ptr, size }
 	{}
 
-	template<typename Type0, typename SizeType0, typename ErrorHandler>
-	friend inline memory<Type0, SizeType0>
+	template<typename _Type, typename _SizeType, typename _IndexType, typename ErrorHandler>
+	friend inline memory<_Type, _SizeType, _IndexType>
 	try_allocate(
 		nuint elements_number, ErrorHandler&& unexpected_handler
 	);
 
-	template<typename Type0, typename SizeType0, typename ErrorHandler>
-	friend inline memory<Type0, SizeType0>
+	template<typename _Type, typename _SizeType, typename _IndexType, typename ErrorHandler>
+	friend inline memory<_Type, _SizeType, _IndexType>
 	try_allocate_zeroed(
 		nuint elements_number, ErrorHandler&& unexpected_handler
 	);

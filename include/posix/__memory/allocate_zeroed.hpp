@@ -10,8 +10,13 @@ extern "C"
 
 namespace posix {
 
-	template<typename Type, typename SizeType = nuint, typename ErrorHandler>
-	inline span<Type, SizeType>
+	template<
+		typename Type,
+		typename SizeType = nuint,
+		typename IndexType = SizeType,
+		typename ErrorHandler
+	>
+	inline span<Type, SizeType, IndexType>
 	try_allocate_raw_zeroed(
 		nuint elements_number, ErrorHandler&& unexpected_handler
 	) {
@@ -23,29 +28,42 @@ namespace posix {
 		return { (Type*) ptr, SizeType(elements_number) };
 	}
 
-	template<typename Type, typename SizeType = nuint, typename ErrorHandler>
-	inline memory<Type, SizeType>
+	template<
+		typename Type,
+		typename SizeType = nuint,
+		typename IndexType = SizeType,
+		typename ErrorHandler
+	>
+	inline memory<Type, SizeType, IndexType>
 	try_allocate_zeroed(
 		nuint elements_number, ErrorHandler&& unexpected_handler
 	) {
-		span<Type> s = try_allocate_raw_zeroed<Type, SizeType>(
+		span<Type> s = try_allocate_raw_zeroed<Type, SizeType, IndexType>(
 			elements_number, unexpected_handler
 		);
 		return { s.iterator(), s.size() };
 	}
 
-	template<typename Type, typename SizeType = nuint>
-	inline span<Type, SizeType>
+	template<
+		typename Type,
+		typename SizeType = nuint,
+		typename IndexType = SizeType
+	>
+	inline span<Type, SizeType, IndexType>
 	allocate_raw_zeroed(nuint elements_number) {
-		return try_allocate_raw_zeroed<Type, SizeType>(
+		return try_allocate_raw_zeroed<Type, SizeType, IndexType>(
 			elements_number, posix::unhandled
 		);
 	}
 
-	template<typename Type = uint1a, typename SizeType = nuint>
+	template<
+		typename Type = uint1a,
+		typename SizeType = nuint,
+		typename IndexType = SizeType
+	>
 	inline memory<Type, SizeType>
 	allocate_zeroed(nuint elements_number) {
-		return try_allocate_zeroed<Type, SizeType>(
+		return try_allocate_zeroed<Type, SizeType, IndexType>(
 			elements_number, posix::unhandled
 		);
 	}
