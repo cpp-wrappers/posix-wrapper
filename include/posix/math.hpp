@@ -12,7 +12,9 @@ static_assert(false);
 #include "./error.hpp"
 #include "./unhandled.hpp"
 
-float strtof(const char *str, char** end);
+extern "C" float strtof(const char *str, char** end);
+extern "C" double strtod(const char *str, char** end);
+extern "C" unsigned long strtoul(const char* str, char** end, int base);
 
 namespace posix {
 
@@ -33,6 +35,25 @@ namespace posix {
 
 	inline float str_to_float(const char *str, char** end=nullptr) {
 		float result = strtof(str, end);
+		auto error = posix::latest_error();
+		if (error.code() != 0) {
+			posix::unhandled(error);
+		}
+		return result;
+	}
+
+	inline double str_to_double(const char *str, char** end=nullptr) {
+		double result = strtod(str, end);
+		auto error = posix::latest_error();
+		if (error.code() != 0) {
+			posix::unhandled(error);
+		}
+		return result;
+	}
+
+	inline unsigned long
+	str_to_unsigned_long(const char *str, nuint base = 10, char** end=nullptr) {
+		unsigned long result = strtoul(str, end, base);
 		auto error = posix::latest_error();
 		if (error.code() != 0) {
 			posix::unhandled(error);

@@ -1,6 +1,6 @@
 #pragma once
 
-extern "C" [[noreturn]] void abort() noexcept;
+extern "C" __attribute__ ((__noreturn__)) void abort();
 
 namespace posix {
 

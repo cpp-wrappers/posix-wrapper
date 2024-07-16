@@ -18,10 +18,10 @@ namespace posix {
 		auto result = (posix::dir_entry*)
 			::readdir((struct DIR*) dir_ptr.underlying());
 
-		auto errno = posix::latest_error();
+		auto _errno = posix::latest_error();
 
-		if(result == nullptr && errno.code() != prev_errno.code()) {
-			return unexpected{ errno };
+		if(result == nullptr && _errno.code() != prev_errno.code()) {
+			return unexpected{ _errno };
 		}
 		return { result };
 	}
