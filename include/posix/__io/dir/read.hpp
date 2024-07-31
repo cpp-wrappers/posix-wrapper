@@ -27,7 +27,7 @@ namespace posix {
 	}
 
 	inline handle<posix::dir_entry> read_dir(handle<posix::dir> dir_ptr) {
-		auto result =try_read_dir(dir_ptr);
+		auto result = try_read_dir(dir_ptr);
 		if(result.is_unexpected()) {
 			posix::unhandled(result.get_unexpected());
 		}
