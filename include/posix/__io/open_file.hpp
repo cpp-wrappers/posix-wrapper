@@ -22,7 +22,7 @@ namespace posix {
 			(const char*) name.iterator(),
 			(int) access_modes
 		);
-		if(fd == -1) {
+		if (fd == -1) {
 			return posix::latest_error();
 		}
 		return handle<posix::file>{ fd };
@@ -38,7 +38,7 @@ namespace posix {
 			(int) access_modes,
 			file_modes
 		);
-		if(fd == -1) {
+		if (fd == -1) {
 			return posix::latest_error();
 		}
 		return handle<posix::file>{ fd };
@@ -62,7 +62,7 @@ namespace posix {
 			= posix::try_open_file(
 				name, access_modes
 			);
-		if(result.is_unexpected()) {
+		if (result.is_unexpected()) {
 			posix::unhandled(result.get_unexpected());
 		}
 		return result.get_expected();
@@ -77,7 +77,7 @@ namespace posix {
 			= posix::try_open_file(
 				name, access_modes, file_modes
 			);
-		if(result.is_unexpected()) {
+		if (result.is_unexpected()) {
 			posix::unhandled(result.get_unexpected());
 		}
 		return result.get_expected();

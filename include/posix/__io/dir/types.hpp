@@ -33,6 +33,20 @@ namespace posix {
 		char dd_name[1];
 	};
 
+#elif __gnu_linux__
+	struct dir;
+
+	struct dir_entry {
+		unsigned long d_ino;
+		long d_off;
+		unsigned short int d_reclen;
+		unsigned char d_type;
+		char d_name[256];
+	};
+
+#else
+	static_assert(false);
+
 #endif
 
 }
@@ -59,9 +73,13 @@ struct handle_interface<posix::dir_entry> :
 	handle_interface_base<posix::dir_entry>
 {
 	auto name() const {
+#if __WIN64
 		return c_string_view {
 			this->underlying()->name_,
 			this->underlying()->name_length_
 		};
+#else
+		return c_string{this->underlying()->d_name};
+#endif
 	}
 };

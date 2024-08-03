@@ -15,8 +15,8 @@ enum class file_access_mode {
 	exclusive  = 0x0400,
 	text       = 0x4000,
 	binary     = 0x8000,
-	#elif __gnu_linux__
 
+	#elif __gnu_linux__
 	binary     = 00000,
 	read       = 00000,
 	write      = 00001,

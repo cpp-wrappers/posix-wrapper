@@ -4,9 +4,14 @@
 
 namespace posix {
 
-	#if _WIN64
+	#if _WIN64 || __gnu_linux__
 		using ticks_t = long;
+	#endif
+
+	#if _WIN64
 		constexpr ticks_t ticks_per_second = 1000;
+	#elif __gnu_linux__
+		constexpr ticks_t ticks_per_second = 1000000;
 	#else
 		static_assert(false);
 	#endif

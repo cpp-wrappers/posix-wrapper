@@ -4,12 +4,10 @@
 #include <integer.hpp>
 #include <enum_flags.hpp>
 
-// #include  <sys/stat.h>
-
 namespace posix {
 
-#if __WIN64
 enum class file_mode : unsigned short {
+#if __WIN64
 	block = 0x3000,
 	character = 0x2000,
 	fifo = 0x1000,
@@ -21,6 +19,20 @@ enum class file_mode : unsigned short {
 	read = 0x0100,
 	write = 0x0080,
 	execute = 0x0040,
+#else
+	block = 0060000,
+	character = 0020000,
+	fifo = 0010000,
+	regular = 0100000,
+	dir = 0040000,
+	link = 0120000,
+	socket = 0140000,
+
+	read = 0400,
+	write = 0200,
+	execute = 0100,
+#endif
+
 	user_rw = read | write,
 	user_rwx = read | write | execute,
 	group_rw = (read | write) >> 3,
@@ -30,8 +42,6 @@ enum class file_mode : unsigned short {
 };
 
 using file_modes = enum_flags<file_mode>;
-
-#endif
 
 struct status {
 #if __WIN64
@@ -55,7 +65,7 @@ struct status {
 	unsigned long device_id;
 	unsigned long id;
 	unsigned long hard_links_count;
-	unsigned int mode;
+	file_modes mode;
 	unsigned int user_id;
 	unsigned int group_id;
 	int __pad;

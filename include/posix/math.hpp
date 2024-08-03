@@ -36,7 +36,7 @@ namespace posix {
 	inline float str_to_float(const char *str, char** end=nullptr) {
 		float result = strtof(str, end);
 		auto error = posix::latest_error();
-		if (error.code() != 0) {
+		if (result == __builtin_huge_valf() && error.code() != 0) {
 			posix::unhandled(error);
 		}
 		return result;
@@ -45,7 +45,7 @@ namespace posix {
 	inline double str_to_double(const char *str, char** end=nullptr) {
 		double result = strtod(str, end);
 		auto error = posix::latest_error();
-		if (error.code() != 0) {
+		if (result == __builtin_huge_val() && error.code() != 0) {
 			posix::unhandled(error);
 		}
 		return result;
@@ -55,7 +55,7 @@ namespace posix {
 	str_to_unsigned_long(const char *str, nuint base = 10, char** end=nullptr) {
 		unsigned long result = strtoul(str, end, base);
 		auto error = posix::latest_error();
-		if (error.code() != 0) {
+		if (result == (0ul - 1ul) && error.code() != 0) {
 			posix::unhandled(error);
 		}
 		return result;
